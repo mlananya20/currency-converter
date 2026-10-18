@@ -1,34 +1,82 @@
-const result = document.getElementById('result');
-const error = document.getElementById('error');
-const amount = document.getElementById('amount');
-const button = document.getElementById('button');
-const fromCurrency = document.getElementById('fromCurrency');
-const toCurrency = document.getElementById('toCurrency');
+let result = document.getElementById("result");
+let error = document.getElementById("error");
+let amount = document.getElementById("amount");
+let button = document.getElementById("button");
 
-async function countries() {
-try{
-	const response = fetch('https://api.restcountries.com/countries/v5?response_fields=names.common,flag.emoji,currencies',{ headers: { 'Authorization': 'Bearer rc_live_c44d93ca98cb40cf9745dba6499e2677' } });
-	 const responseResult = await response.json();
-         responseResult.forEach(function(country) {
-            if (country.currencies) {
-                for (let code in country.currencies) {
-                    let option1 = document.createElement("option");
-                    option1.value = code;
-                    option1.textContent = country.flag+" "+code+" - "+ country.name.common;
-                    fromCurrency.appendChild(option1);
+let fromCurrency = document.getElementById("fromCurrency");
+let toCurrency = document.getElementById("toCurrency");
+let fromFlag = document.getElementById("fromFlag");
+let toFlag = document.getElementById("toFlag");
 
-                    let option2 = document.createElement("option");
-                    option2.value = code;
-                    option2.textContent =country.flag +" "+ code + " - "+country.name.common;
-                    toCurrency.appendChild(option2);
-                }
-            }
-	    });
+let countriesKey = "rc_live_c44d93ca98cb40cf9745dba6499e2677";
+let flags = {};
+
+function setFlag(image, code) {
+    image.src = flags[code];
+}
+
+function addOption(select, code, name) {
+    for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === code) {
+            return;
+        }
     }
-catch(err){
-	error.textContent = "Cannot load currencies"
+    let option = new Option(code + " - " + name, code);
+    select.add(option);
 }
+
+fromCurrency.addEventListener("change", function () {
+    setFlag(fromFlag, fromCurrency.value);
+});
+
+toCurrency.addEventListener("change", function () {
+    setFlag(toFlag, toCurrency.value);
+});
+
+async function loadCurrencies() {
+    try {
+        let response = await fetch("https://api.restcountries.com/countries/v5?response_fields=currencies,flag.url_png&limit=100",{ headers: { Authorization: "Bearer " + countriesKey } });
+        let responseResult = await response.json();
+        for (let country of responseResult.data.objects) {
+            for (let c of country.currencies) {
+                if (!flags[c.code]) {
+                    flags[c.code] = country.flag.url_png;
+                }
+                addOption(fromCurrency, c.code, c.name);
+                addOption(toCurrency, c.code, c.name);
+            }
+        }
+
+    } catch (err) {
+        console.log(err);
+        error.textContent = "Cannot load currencies";
+    }
 }
-countries();
 
+loadCurrencies();
 
+async function convert() {
+    result.textContent = "";
+    error.textContent = "";
+
+    if (amount.value === "" || isNaN(amount.value) || amount.value <= 0) {
+        error.textContent = "Please enter a valid amount.";
+        return;
+    }
+
+    try {
+        let response = await fetch("https://v6.exchangerate-api.com/v6/038d497c7e08ba0b7ba11e68/pair/" + fromCurrency.value + "/" + toCurrency.value + "/" + amount.value);
+        let data = await response.json();
+
+        if (data.result === "success") {
+            result.textContent = amount.value + " " + fromCurrency.value + " = " + data.conversion_result + " " + toCurrency.value;
+        } else {
+            error.textContent = "An error occurred, please try again later.";
+        }
+
+    } catch (err) {
+        console.log(err);
+        error.textContent = "An error occurred, please try again later.";
+    }
+}
+button.addEventListener("click", convert);

@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Currency Converter</title>
-
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Currency Converter</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<section>
-	<h1>Currency converter</h1>
-	<label for="amount">Enter amount</label>
-	<input type="text" id="amount" placeholder="100" required>
+    <section>
+    <h1>Currency Converter</h1>
+        <label for="amount">Enter amount</label>
+        <input type="number" id="amount" placeholder="100" required>
+        <div class="currency-container">
+            <div class="currency-select">
+                <img id="fromFlag" src="https://flags.restcountries.com/v5/w160/us.png" alt="flag">
+                <select id="fromCurrency">
+                    <option value="USD">USD - United States Dollar</option>
+                </select>
+            </div>
 
-	<br><br>
-	
-	<select id="fromCurrency">
-		<option value=""USD>USD - United States Dollar</option>
-	</select>
-	TO
-	<select id ="toCurrency">
-		<option value="INR">INR - Indian Rupee</option>
-	</select>
-	
-	<br><br>
-	<button id = "button">Convert</button>
-	
-	<p id="result"></p>
-	<p id="error"></p>
-	</section>
-	
-	<script src="script.js"></script>
-	
+            <span>TO</span>
+
+            <div class="currency-select">
+                <img id="toFlag" src="https://flags.restcountries.com/v5/w160/in.png" alt="flag">
+                <select id="toCurrency">
+                    <option value="INR">INR - Indian Rupee</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="button">Convert</button>
+
+        <p id="result"></p>
+        <p id="error"></p>
+    </section>
+    <script src="script.js"></script>
 </body>
 </html>
