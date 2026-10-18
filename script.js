@@ -10,11 +10,7 @@ let toFlag = document.getElementById("toFlag");
 
 let countriesKey = "rc_live_c44d93ca98cb40cf9745dba6499e2677";
 let flags = {};
-
-function setFlag(image, code) {
-    image.src = flags[code];
-}
-
+ 
 function addOption(select, code, name) {
     for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value === code) {
@@ -24,14 +20,19 @@ function addOption(select, code, name) {
     let option = new Option(code + " - " + name, code);
     select.add(option);
 }
-
+ 
 fromCurrency.addEventListener("change", function () {
-    setFlag(fromFlag, fromCurrency.value);
+    if (flags[fromCurrency.value]) {
+        fromFlag.src = flags[fromCurrency.value];
+    }
+});
+ 
+toCurrency.addEventListener("change", function () {
+    if (flags[toCurrency.value]) {
+        toFlag.src = flags[toCurrency.value];
+    }
 });
 
-toCurrency.addEventListener("change", function () {
-    setFlag(toFlag, toCurrency.value);
-});
 
 async function loadCurrencies() {
     try {
